@@ -519,7 +519,10 @@ def run_func(op_code_node):
         r_node = l_node.next
         r_node = run_expr(r_node)
         l_node = run_expr(l_node)
-        defineTable[l_node.value] = r_node.value
+        if (r_node.type is TokenType.LIST):
+            defineTable[l_node.value] = r_node
+        else:
+            defineTable[l_node.value] = r_node.value
         return Node(TokenType.ID, "SUCCESS")
 
     def create_new_quote_list(value_node, list_flag=False):
@@ -718,5 +721,7 @@ def run_inter():
 
 fest_method("(define a 3)")
 fest_method("(define b \'(1 2 3))")
-fest_method("(+ 3 (+ a 4))")
-run_inter()
+fest_method("(+ 3 (+ a 4)")
+fest_method("(car \'(2 3 4))")
+fest_method("(car b)")
+#run_inter()
