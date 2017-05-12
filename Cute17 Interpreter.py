@@ -655,12 +655,25 @@ def print_node(node):
     if node.type is TokenType.QUOTE:
         return "'"+print_node(node.next)
 
+def lookUpTable(node):
+    l_node = node.value.next
+    run_lookUpTable(l_node)
+
+def run_lookUpTable(node):
+    if node.type is TokenType.ID:
+        for i in defineTable.keys():
+            if node.value is i:
+                node.value = defineTable[i]
+                break
+    if node.next is not None:
+        run_lookUpTable(node.next)
 
 def fest_method(input):
     test_cute = CuteScanner(input)
     test_tokens = test_cute.tokenize()
     test_basic_paser = BasicPaser(test_tokens)
     node = test_basic_paser.parse_expr()
+    lookUpTable(node)
     cute_inter = run_expr(node)
     print("RESULT :", end=" ")
     print(print_node(cute_inter))
@@ -699,5 +712,5 @@ def run_inter():
             except:
                 print("INVALID CUTE EXPRESSION")
 
-#fest_method("(define b \'(1 2 3))")
+#fest_method("(define a 1)")
 run_inter()
