@@ -522,7 +522,7 @@ def run_func(op_code_node):
         if (r_node.type is TokenType.LIST):
             defineTable[l_node.value] = r_node
         else:
-            defineTable[l_node.value] = r_node.value
+            defineTable[l_node.value] = Node(TokenType.INT,r_node.value)
         return Node(TokenType.ID, "SUCCESS")
 
     def create_new_quote_list(value_node, list_flag=False):
@@ -577,8 +577,14 @@ def run_expr(root_node):
     if root_node.type is TokenType.ID:
         for i in defineTable.keys():
             if root_node.value is i:
-                root_node.value = defineTable[i]
-                break
+                root_node.type = defineTable[i].type
+                if defineTable[i].type is TokenType.LIST:
+
+                    root_node = defineTable[i]
+                    return run_list(root_node)
+                else:
+                    root_node.value = defineTable[i].value
+                    break
         return root_node
     elif root_node.type is TokenType.INT:
         return root_node
@@ -700,8 +706,8 @@ def fest_All():
 
 def displayTable():
     for i in defineTable.keys():
-        print(i+" : ", end=" ")
-        print(defineTable[i])
+        print(i+" :", end=" ")
+        print(defineTable[i].value)
 
 def run_inter():
     print("START CUTE INTERPRETER")
@@ -719,9 +725,11 @@ def run_inter():
             except:
                 print("INVALID CUTE EXPRESSION")
 
-fest_method("(define a 3)")
+fest_method("(define a 3")
 fest_method("(define b \'(1 2 3))")
-fest_method("(+ 3 (+ a 4)")
-fest_method("(car \'(2 3 4))")
-fest_method("(car b)")
-#run_inter()
+fest_method("(define c (+ 2 4)")
+#fest_method("(+ 3 (+ a 4)")
+#fest_method("(car \'(2 3 4))")
+#fest_method("(car b)")
+fest_method("(+ 3 (+ a 3))")
+run_inter()
