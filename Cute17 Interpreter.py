@@ -686,16 +686,12 @@ def commandParser(inputString):
     return inputString.split(' ')
 
 def run_inter():
+    print("START CUTE INTERPRETER")
     while True:
         x = input(">> ")
         if (x == "exit"):
             print("EXIT SHELL")
             break
-
-        commandList = commandParser(x)
-
-        if any("define" in s for s in commandList):
-            print(commandList)
         else:
             try:
                 print("EVALUATING CUTE EXPRESSION....")
@@ -707,5 +703,5 @@ def test():
     print(commandParser("(define a 3)"))
 
 
-fest_method("(define a (- 5 2))")
-#run_inter()
+#fest_method("exi")
+run_inter()
