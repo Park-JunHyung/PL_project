@@ -572,6 +572,10 @@ def run_expr(root_node):
         return None
 
     if root_node.type is TokenType.ID:
+        for i in defineTable.keys():
+            if root_node.value is i:
+                root_node.value = defineTable[i]
+                break
         return root_node
     elif root_node.type is TokenType.INT:
         return root_node
@@ -673,7 +677,7 @@ def fest_method(input):
     test_tokens = test_cute.tokenize()
     test_basic_paser = BasicPaser(test_tokens)
     node = test_basic_paser.parse_expr()
-    lookUpTable(node)
+    #lookUpTable(node)
     cute_inter = run_expr(node)
     print("RESULT :", end=" ")
     print(print_node(cute_inter))
@@ -712,5 +716,7 @@ def run_inter():
             except:
                 print("INVALID CUTE EXPRESSION")
 
-#fest_method("(define a 1)")
+fest_method("(define a 3)")
+fest_method("(define b \'(1 2 3))")
+fest_method("(+ 3 (+ a 4))")
 run_inter()
