@@ -519,10 +519,8 @@ def run_func(op_code_node):
         r_node = l_node.next
         r_node = run_expr(r_node)
         l_node = run_expr(l_node)
-
         defineTable[l_node.value] = r_node.value
-
-        return Node(TokenType.INT, 300)
+        return Node(TokenType.ID, "SUCCESS")
 
     def create_new_quote_list(value_node, list_flag=False):
         """
@@ -667,8 +665,6 @@ def fest_method(input):
     print("RESULT :", end=" ")
     print(print_node(cute_inter))
 
-
-
 def fest_All():
     fest_method("(+ 1 2 )")
     fest_method("(- ( + 1 2 ) 4 )")
@@ -682,8 +678,10 @@ def fest_All():
     fest_method("(cond (#F 1) ( #T 2 ) )")
     fest_method("(cond ( ( null? ' ( 1 2 3 ) ) 1 ) ( ( > 100 10 ) 2 ) ( #T 3 ) )")
 
-def commandParser(inputString):
-    return inputString.split(' ')
+def displayTable():
+    for i in defineTable.keys():
+        print(i+" : ", end=" ")
+        print(defineTable[i])
 
 def run_inter():
     print("START CUTE INTERPRETER")
@@ -692,6 +690,8 @@ def run_inter():
         if (x == "exit"):
             print("EXIT SHELL")
             break
+        elif x == "display":
+            displayTable()
         else:
             try:
                 print("EVALUATING CUTE EXPRESSION....")
@@ -699,9 +699,5 @@ def run_inter():
             except:
                 print("INVALID CUTE EXPRESSION")
 
-def test():
-    print(commandParser("(define a 3)"))
-
-
-#fest_method("exi")
+#fest_method("(define b \'(1 2 3))")
 run_inter()
