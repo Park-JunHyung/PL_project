@@ -355,7 +355,6 @@ def run_list(root_node):
 
     return run_func(op_code_node)(root_node)
 
-
 def run_func(op_code_node):
     """
     :type op_code_node:Node/
@@ -525,6 +524,9 @@ def run_func(op_code_node):
             defineTable[l_node.value] = Node(TokenType.INT,r_node.value)
         return Node(TokenType.ID, "SUCCESS")
 
+    def run_lambda(node):
+        return Node(TokenType.ID, "LAMBDA")
+
     def create_new_quote_list(value_node, list_flag=False):
         """
         :type value_node: Node
@@ -563,6 +565,7 @@ def run_func(op_code_node):
     table['='] = eq
     table['cond'] = cond
     table['define'] = define
+    table['lambda'] = run_lambda
 
     return table[op_code_node.value]
 
@@ -722,14 +725,12 @@ def run_inter():
             try:
                 print("EVALUATING CUTE EXPRESSION....")
                 fest_method(x)
-            except:
+            except Exception as e:
                 print("INVALID CUTE EXPRESSION")
+                print(e)
 
-fest_method("(define a 3")
-fest_method("(define b \'(1 2 3))")
-fest_method("(define c (+ 2 4)")
-#fest_method("(+ 3 (+ a 4)")
-#fest_method("(car \'(2 3 4))")
-#fest_method("(car b)")
-fest_method("(+ 3 (+ a 3))")
+#fest_method("(define a 3")
+#fest_method("(define b \'(1 2 3))")
+#fest_method("(define c (+ 2 4)")
+fest_method("( (lambda) )")
 run_inter()
