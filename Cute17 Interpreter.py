@@ -536,11 +536,11 @@ def run_func(op_code_node):
         answer=run_expr(newNode)
         return answer#Node(TokenType.ID, "LAMBDA")
 
-    def run_search(node,type,targetNode):
+    def run_search(node,varNode,targetNode):
         if (node.value.next is not None):
-            if (node.next.value is type.value):
-                node.next.value = targetNode
-            run_search(node.value.next, targetNode)
+            if (node.value.next.value is varNode.value):
+                node.value.next = targetNode
+            run_search(node.value.next,varNode, targetNode)
         return node
 
     def create_new_quote_list(value_node, list_flag=False):
