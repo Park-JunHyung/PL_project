@@ -532,7 +532,7 @@ def run_func(op_code_node):
             if(node is not None):
                 search_node(node.value)
                 search_node(node.next)
-                print node.value
+                print(node.value)
         return None
         temp=node.next
         l_node = node.value.next
