@@ -356,6 +356,17 @@ def run_list(root_node):
     if op_code_node.type is TokenType.LIST:
         return run_list(op_code_node)
     else:
+        if op_code_node.type is TokenType.ID:
+            for i in defineTable.keys():
+                if root_node.value is i:
+                    root_node.type = defineTable[i].type
+                    if defineTable[i].type is TokenType.LIST:
+
+                        root_node = defineTable[i]
+                        return run_list(root_node)
+                    else:
+                        root_node.value = defineTable[i].value
+                        break
         return run_func(op_code_node)(root_node)
 
 
@@ -521,8 +532,9 @@ def run_func(op_code_node):
     def define(node):
         l_node = node.value.next
         r_node = l_node.next
-        r_node = run_expr(r_node)
-        l_node = run_expr(l_node)
+        if(r_node.value.type is not TokenType.LAMBDA):
+            r_node = run_expr(r_node)
+            l_node = run_expr(l_node)
         if (r_node.type is TokenType.LIST):
             defineTable[l_node.value] = r_node
         else:
@@ -757,5 +769,7 @@ def run_inter():
 # fest_method("(define a 3")
 # fest_method("(define b \'(1 2 3))")
 # fest_method("(define c (+ 2 4)")
-fest_method("((lambda (x) (+ x 1)) 2)")
-# run_inter()
+#fest_method("((lambda (x) (+ x 1)) 2)")
+fest_method("(define plus1 (lambda (x) (+ x 1)))")
+fest_method("(plus1 3)")
+#run_inter()
