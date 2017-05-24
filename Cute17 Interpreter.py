@@ -352,22 +352,19 @@ def run_list(root_node):
     :type root_node: Node
     """
     op_code_node = root_node.value
-
     if op_code_node.type is TokenType.LIST:
         return run_list(op_code_node)
     else:
         if op_code_node.type is TokenType.ID:
             for i in defineTable.keys():
-                if root_node.value is i:
-                    root_node.type = defineTable[i].type
+                if op_code_node.value ==i:
+                    op_code_node.type = defineTable[i].type
                     if defineTable[i].type is TokenType.LIST:
-
-                        root_node = defineTable[i]
-                        return run_list(root_node)
+                        op_code_node = defineTable[i]
                     else:
-                        root_node.value = defineTable[i].value
+                        op_code_node.value = defineTable[i].value
                         break
-        return run_func(op_code_node)(root_node)
+    return run_func(op_code_node)(root_node)
 
 
 def run_func(op_code_node):
