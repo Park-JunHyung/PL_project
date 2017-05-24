@@ -353,7 +353,10 @@ def run_list(root_node):
     """
     op_code_node = root_node.value
 
-    return run_func(op_code_node)(root_node)
+    if op_code_node.type is TokenType.LIST:
+        return run_list(op_code_node)
+    else:
+        return run_func(op_code_node)(root_node)
 
 def run_func(op_code_node):
     """
@@ -525,7 +528,7 @@ def run_func(op_code_node):
         return Node(TokenType.ID, "SUCCESS")
 
     def run_lambda(node):
-        return Node(TokenType.ID, "LAMBDA")
+        return Node(TokenType.ID, "SEX")
 
     def create_new_quote_list(value_node, list_flag=False):
         """
@@ -732,5 +735,5 @@ def run_inter():
 #fest_method("(define a 3")
 #fest_method("(define b \'(1 2 3))")
 #fest_method("(define c (+ 2 4)")
-fest_method("( (lambda) )")
-run_inter()
+fest_method("(( (lambda) ))")
+#run_inter()
