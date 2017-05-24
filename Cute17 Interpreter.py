@@ -521,14 +521,32 @@ def run_func(op_code_node):
         r_node = l_node.next
         r_node = run_expr(r_node)
         l_node = run_expr(l_node)
-        if (r_node.type is TokenType.LIST):
+        if r_node.type is TokenType.LIST:
             defineTable[l_node.value] = r_node
         else:
-            defineTable[l_node.value] = Node(TokenType.INT,r_node.value)
+            defineTable[l_node.value] = Node(TokenType.INT, r_node.value)
         return Node(TokenType.ID, "SUCCESS")
 
     def run_lambda(node):
-        return Node(TokenType.ID, "SEX")
+        def search_node(node):
+            if(node is not None):
+                search_node(node.value)
+                search_node(node.next)
+                print node.value
+        return None
+        temp=node.next
+        l_node = node.value.next
+        r_node = l_node.next
+        search_node(r_node)
+
+
+
+
+
+
+
+
+        return run_expr(r_node)
 
     def create_new_quote_list(value_node, list_flag=False):
         """
@@ -735,5 +753,5 @@ def run_inter():
 #fest_method("(define a 3")
 #fest_method("(define b \'(1 2 3))")
 #fest_method("(define c (+ 2 4)")
-fest_method("(( (lambda) ))")
+fest_method("((lambda (x) (+ x 1 ) ) 2 )")
 #run_inter()
