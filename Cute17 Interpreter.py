@@ -532,15 +532,15 @@ def run_func(op_code_node):
     def run_lambda(node):
         l_node = node.value.next
         funcNode = l_node.next
-        newNode=run_search(funcNode,l_node.value,node.next)
+        newNode=run_search(funcNode.value,l_node.value,node.next)
         answer=run_expr(newNode)
         return answer#Node(TokenType.ID, "LAMBDA")
 
     def run_search(node,varNode,targetNode):
-        if (node.value.next is not None):
-            if (node.value.next.value is varNode.value):
-                node.value.next = targetNode
-            run_search(node.value.next,varNode, targetNode)
+        if (node is not None):
+            if (node.value is varNode.value):
+                node.next = targetNode
+            run_search(node.next,varNode, targetNode)
         return node
 
     def create_new_quote_list(value_node, list_flag=False):
