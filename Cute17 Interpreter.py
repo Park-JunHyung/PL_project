@@ -540,13 +540,20 @@ def run_func(op_code_node):
         tempNode = copy.deepcopy(node)
         l_node = tempNode.value.next
         funcNode = l_node.next
-        newNode = run_search(funcNode.value, l_node.value, tempNode.next)
-        answer = run_expr(Node(TokenType.LIST, newNode))
+        while True:
+            newNode = run_search(funcNode.value, l_node.value, tempNode.next)
+            answer = run_expr(Node(TokenType.LIST, newNode))
+            if (funcNode.next is not None):
+                funcNode = funcNode.next
+            else:
+                break
         return answer
 
     def run_search(node, varNode, targetNode):
         if (node is not None):
-            if (node.value is varNode.value):
+            if node.type is TokenType.LIST:
+                run_search(node.value, varNode, targetNode)
+            if (node.value == varNode.value):
                 node.value = targetNode.value
             run_search(node.next, varNode, targetNode)
         return node
@@ -606,7 +613,6 @@ def run_expr(root_node):
             if root_node.value is i:
                 root_node.type = defineTable[i].type
                 if defineTable[i].type is TokenType.LIST:
-
                     root_node = defineTable[i]
                     return run_list(root_node)
                 else:
@@ -762,11 +768,19 @@ def run_inter():
                 print(e)
 
 
-fest_method("(define a 3")
+#fest_method("(define a 3")
 #fest_method("(define b \'(1 2 3))")
 #fest_method("(define c (+ 2 4)")
-fest_method("(+ a 3)")
-fest_method("(define plus1 (lambda (x) (+ x 1)))")
-fest_method("(plus1 3)")
-fest_method("(plus1 6)")
-#run_inter()
+#fest_method("(+ a 3)")
+#fest_method("(define plus1 (lambda (x y) (+ x 1)))")
+#fest_method("(define plus2 (lambda (x) (+ (plus1 x) 1)))")
+#fest_method("(plus1 4)")
+#fest_method("(plus2 4)")
+fest_method("(define cube ( lambda (n) (define sqrt(lambda (n) (* n n))) (* (sqrt n) n)))")
+fest_method("(cube 13)")
+#fest_method("(plus2 3)")
+#fest_method("(plus1 3)")
+#fest_method("(plus1 6)")
+#fest_method("(plus1 10)")
+#fest_method("(plus1 39)")
+run_inter()
