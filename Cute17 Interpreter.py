@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from string import ascii_letters, digits, whitespace
-
+import copy
 defineTable = {}
 
 
@@ -537,9 +537,10 @@ def run_func(op_code_node):
         return Node(TokenType.ID, "SUCCESS")
 
     def run_lambda(node):
-        l_node = node.value.next
+        tempNode = copy.deepcopy(node)
+        l_node = tempNode.value.next
         funcNode = l_node.next
-        newNode=run_search(funcNode.value, l_node.value, node.next)
+        newNode = run_search(funcNode.value, l_node.value, tempNode.next)
         answer = run_expr(Node(TokenType.LIST, newNode))
         return answer
 
@@ -761,14 +762,11 @@ def run_inter():
                 print(e)
 
 
-##fest_method("(define a 3")
+fest_method("(define a 3")
 #fest_method("(define b \'(1 2 3))")
 #fest_method("(define c (+ 2 4)")
-#fest_method("(+ a 3)")
+fest_method("(+ a 3)")
 fest_method("(define plus1 (lambda (x) (+ x 1)))")
-fest_method("(plus1 10)")
-fest_method("(plus1)")
-#fest_method("(define plus2 (lambda (x) (+ (plus1 x) 1)))")
-#fest_method("(plus2 3)")
-#fest_method("(define cube (lambda sqrt (lambda (n) (* n n))) (* (sqrt n) n)))")
+fest_method("(plus1 3)")
+fest_method("(plus1 6)")
 #run_inter()
