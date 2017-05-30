@@ -529,7 +529,6 @@ def run_func(op_code_node):
         r_node = l_node.next
         if (type(r_node.value) is str or r_node.value.type is not TokenType.LAMBDA):
             r_node = run_expr(r_node)
-            l_node = run_expr(l_node)
         if (r_node.type is TokenType.LIST):
             defineTable[l_node.value] = r_node
         else:
@@ -782,6 +781,7 @@ fest_method("(+ a 3)")
 print("T7")
 fest_method("(define a 2)")
 fest_method("(* a 4)")
+displayTable()
 print("T8")
 fest_method("((lambda (x) (* x -2)) 3)")
 print("T9")
