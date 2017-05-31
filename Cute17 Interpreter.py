@@ -825,4 +825,5 @@ fest_method("(define new_fun(lambda (fun1 fun2 x) (fun2 (fun1 x))))")
 fest_method("(new_fun square mul_two 10)")
 print("T20")
 fest_method("(define cube (lambda (n)(define sqrt (lambda (n) (* n n)))(* (sqrt n) n)))")
+
 #run_inter()
