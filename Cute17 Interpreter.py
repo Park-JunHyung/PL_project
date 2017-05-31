@@ -529,7 +529,6 @@ def run_func(op_code_node):
         r_node = l_node.next
         if (type(r_node.value) is str or r_node.value.type is not TokenType.LAMBDA):
             r_node = run_expr(r_node)
-            l_node = run_expr(l_node)
         if (r_node.type is TokenType.LIST):
             defineTable[l_node.value] = r_node
         else:
@@ -540,13 +539,20 @@ def run_func(op_code_node):
         tempNode = copy.deepcopy(node)
         l_node = tempNode.value.next
         funcNode = l_node.next
-        while True:
-            newNode = run_search(funcNode.value, l_node.value, tempNode.next)
-            answer = run_expr(Node(TokenType.LIST, newNode))
-            if (funcNode.next is not None):
-                funcNode = funcNode.next
-            else:
-                break
+        parNode = tempNode.next
+        l_node = l_node.value
+        while l_node is not None:
+            while True:
+                newNode = run_search(funcNode.value, l_node, parNode.value)
+                if (funcNode.next is not None):
+                    funcNode = funcNode.next
+                else:
+                    break
+
+            l_node = l_node.next
+            parNode = parNode.next
+
+        answer = run_expr(Node(TokenType.LIST, newNode))
         return answer
 
     def run_search(node, varNode, targetNode):
@@ -554,7 +560,7 @@ def run_func(op_code_node):
             if node.type is TokenType.LIST:
                 run_search(node.value, varNode, targetNode)
             if (node.value == varNode.value):
-                node.value = targetNode.value
+                node.value = targetNode
             run_search(node.next, varNode, targetNode)
         return node
 
@@ -767,21 +773,57 @@ def run_inter():
                 print("INVALID CUTE EXPRESSION")
                 print(e)
 
+print("T1")
+fest_method("(define a 1)")
+print("T2")
+#fest_method("(define b `(1 2 3))")
+print("T3")
+fest_method("(define c (- 5 2))")
+print("T4")
+#fest_method("(define d `(+ 2 3))")
+print("T5")
+#fest_method("(define test b)")
+print("T6")
+fest_method("(+ a 3)")
+print("T7")
+fest_method("(define a 2)")
+fest_method("(* a 4)")
+displayTable()
+print("T8")
+fest_method("((lambda (x) (* x -2)) 3)")
+print("T9")
+fest_method("((lambda (x) (/ x 2)) a) ")
+print("T10")
+fest_method("((lambda (x y) (* x y)) 3 5) ")
+print("T11")
+fest_method("((lambda (x y) (* x y)) a 5) ")
+print("T12")
+fest_method("(define plus1 (lambda (x) (+ x 1)))")
+fest_method("(plus1 3)")
+print("T13")
+fest_method("(define mul1 (lambda (x) (* x a)))")
+fest_method("(mul1 a)")
+print("T14")
+fest_method("(define plus2 (lambda (x) (+ (plus1 x) 1)))")
+fest_method("(plus2 4)")
+print("T15")
+fest_method("(define plus3 (lambda (x) (+ (plus1 x) a)))")
+fest_method("(plus3 a)")
+print("T16")
+fest_method("(define mul2 (lambda (x) (* (plus1 x) -2)))")
+fest_method("(mul2 7)")
+print("T17")
+fest_method("(define lastitem(lambda (ls)(cond ((null? (cdr ls)) (car ls))(#T (lastitem (cdr ls))))))")
+print("T18")
+fest_method("(define square (lambda (x) (* x x)))")
+fest_method("(define yourfunc (lambda (x func) (func x))")
+fest_method("(yourfunc 3 square)")
+print("T19")
+fest_method("(define square (lambda (x) (* x x)))")
+fest_method("(define mul_two (lambda (x) (* 2 x)))")
+fest_method("(define new_fun(lambda (fun1 fun2 x) (fun2 (fun1 x))))")
+fest_method("(new_fun square mul_two 10)")
+print("T20")
+fest_method("(define cube (lambda (n)(define sqrt (lambda (n) (* n n)))(* (sqrt n) n)))")
 
-#fest_method("(define a 3")
-#fest_method("(define b \'(1 2 3))")
-#fest_method("(define c (+ 2 4)")
-#fest_method("(+ a 3)")
-#fest_method("(define plus1 (lambda (x y) (+ x 1)))")
-#fest_method("(define plus2 (lambda (x) (+ (plus1 x) 1)))")
-#fest_method("(plus1 4)")
-#fest_method("(plus2 4)")
-fest_method("(define cube ( lambda (n) (define sqrt(lambda (n) (* n n))) (* (sqrt n) n)))")
-fest_method("(cube 13)")
-#fest_method("(plus2 3)")
-#fest_method("(plus1 3)")
-#fest_method("(plus1 6)")
-#fest_method("(plus1 10)")
-#fest_method("(plus1 39)")
-run_inter()
-#재귀 define 됨
+#run_inter()
