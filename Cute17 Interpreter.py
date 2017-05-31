@@ -784,3 +784,4 @@ fest_method("(cube 13)")
 #fest_method("(plus1 10)")
 #fest_method("(plus1 39)")
 run_inter()
+#재귀 define 됨
