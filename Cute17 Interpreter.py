@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from string import ascii_letters, digits, whitespace
-
+import copy
 defineTable = {}
+
 
 class CuteType:
     INT = 1
@@ -89,7 +90,7 @@ class Token(object):
         else:
             self.type = type
             self.lexeme = lexeme
-        # print type
+            # print type
 
     def __str__(self):
         # return self.lexeme
@@ -100,7 +101,6 @@ class Token(object):
 
 
 class Scanner:
-
     def __init__(self, source_string=None):
         """
         :type self.__source_string: str
@@ -164,7 +164,6 @@ class Scanner:
 
 
 class CuteScanner(object):
-
     transM = {}
 
     def __init__(self, source):
@@ -208,6 +207,7 @@ class CuteScanner(object):
     def tokenize(self):
 
         def build_token(type, lexeme): return Token(type, lexeme)
+
         cute_scanner = Scanner(self.source)
         return cute_scanner.scan(self.transM, build_token)
 
@@ -238,11 +238,12 @@ class TokenType():
     NULL_Q = 29
     EQ_Q = 30
 
+
 NODETYPE_NAMES = dict((eval(attr, globals(), TokenType.__dict__), attr) for attr in dir(
     TokenType()) if not callable(attr) and not attr.startswith('__'))
 
-class Node (object):
 
+class Node(object):
     def __init__(self, type, value=None):
         self.next = None
         self.value = value
@@ -261,7 +262,7 @@ class Node (object):
         if self.type is TokenType.ID:
             result = '[' + NODETYPE_NAMES[self.type] + ':' + self.value + ']'
         elif self.type is TokenType.INT:
-            result = '['+NODETYPE_NAMES[self.type]+':' + self.value + ']'
+            result = '[' + NODETYPE_NAMES[self.type] + ':' + self.value + ']'
         elif self.type is TokenType.LIST:
             if self.value is not None:
                 if self.value.type is TokenType.QUOTE:
@@ -273,7 +274,7 @@ class Node (object):
         elif self.type is TokenType.QUOTE:
             result = "\'"
         else:
-            result = '['+NODETYPE_NAMES[self.type]+']'
+            result = '[' + NODETYPE_NAMES[self.type] + ']'
 
         # fill out
         if self.next is not None:
@@ -283,7 +284,6 @@ class Node (object):
 
 
 class BasicPaser(object):
-
     def __init__(self, token_list):
         """
         :type token_list:list
@@ -319,9 +319,9 @@ class BasicPaser(object):
         if token is None:
             return None
         elif token.type is CuteType.INT:
-            return Node(TokenType.INT,  token.lexeme)
+            return Node(TokenType.INT, token.lexeme)
         elif token.type is CuteType.ID:
-            return Node(TokenType.ID,   token.lexeme)
+            return Node(TokenType.ID, token.lexeme)
         elif token.type is CuteType.L_PAREN:
             return Node(TokenType.LIST, self._parse_expr_list())
         elif token.type is CuteType.R_PAREN:
@@ -352,16 +352,24 @@ def run_list(root_node):
     :type root_node: Node
     """
     op_code_node = root_node.value
-
     if op_code_node.type is TokenType.LIST:
         return run_list(op_code_node)
     else:
-        return run_func(op_code_node)(root_node)
+        if op_code_node.type is TokenType.ID:
+            for i in defineTable.keys():
+                if op_code_node.value == i:
+                    op_code_node.type = defineTable[i].type
+                    op_code_node.value = defineTable[i].value
+                    break
+            return run_list(op_code_node)
+    return run_func(op_code_node)(root_node)
+
 
 def run_func(op_code_node):
     """
     :type op_code_node:Node/
     """
+
     def quote(node):
         return node
 
@@ -510,7 +518,7 @@ def run_func(op_code_node):
         """
         :type node: Node
         """
-        #Fill Out
+        # Fill Out
         if run_expr(node.value).type is TokenType.TRUE:
             return node.value.next
         else:
@@ -519,34 +527,35 @@ def run_func(op_code_node):
     def define(node):
         l_node = node.value.next
         r_node = l_node.next
-        r_node = run_expr(r_node)
-        l_node = run_expr(l_node)
-        if r_node.type is TokenType.LIST:
+        if (type(r_node.value) is str or r_node.value.type is not TokenType.LAMBDA):
+            r_node = run_expr(r_node)
+        if (r_node.type is TokenType.LIST):
             defineTable[l_node.value] = r_node
         else:
             defineTable[l_node.value] = Node(TokenType.INT, r_node.value)
         return Node(TokenType.ID, "SUCCESS")
 
     def run_lambda(node):
-        def search_node(node):
-            if(node is not None):
-                search_node(node.value)
-                search_node(node.next)
-                print(node.value)
-        return None
-        temp=node.next
-        l_node = node.value.next
-        r_node = l_node.next
-        search_node(r_node)
+        tempNode = copy.deepcopy(node)
+        l_node = tempNode.value.next
+        funcNode = l_node.next
+        while True:
+            newNode = run_search(funcNode.value, l_node.value, tempNode.next)
+            answer = run_expr(Node(TokenType.LIST, newNode))
+            if (funcNode.next is not None):
+                funcNode = funcNode.next
+            else:
+                break
+        return answer
 
-
-
-
-
-
-
-
-        return run_expr(r_node)
+    def run_search(node, varNode, targetNode):
+        if (node is not None):
+            if node.type is TokenType.LIST:
+                run_search(node.value, varNode, targetNode)
+            if (node.value == varNode.value):
+                node.value = targetNode.value
+            run_search(node.next, varNode, targetNode)
+        return node
 
     def create_new_quote_list(value_node, list_flag=False):
         """
@@ -603,7 +612,6 @@ def run_expr(root_node):
             if root_node.value is i:
                 root_node.type = defineTable[i].type
                 if defineTable[i].type is TokenType.LIST:
-
                     root_node = defineTable[i]
                     return run_list(root_node)
                 else:
@@ -629,15 +637,17 @@ def print_node(node):
     "입력은 List Node 또는 atom"
     :type node: Node
     """
+
     def print_list(node):
         """
         "List노드의 value에 대해서 출력"
         "( 2 3 )이 입력이면 2와 3에 대해서 모두 출력함"
         :type node: Node
         """
+
         def print_list_val(node):
             if node.next is not None:
-                return print_node(node)+' '+print_list_val(node.next)
+                return print_node(node) + ' ' + print_list_val(node.next)
             return print_node(node)
 
         if node.type is TokenType.LIST:
@@ -645,7 +655,7 @@ def print_node(node):
                 return '( )'
             if node.value.type is TokenType.QUOTE:
                 return print_node(node.value)
-            return '('+print_list_val(node.value)+')'
+            return '(' + print_list_val(node.value) + ')'
 
     if node is None:
         return ''
@@ -690,11 +700,13 @@ def print_node(node):
     if node.type is TokenType.NOT:
         return 'not'
     if node.type is TokenType.QUOTE:
-        return "'"+print_node(node.next)
+        return "'" + print_node(node.next)
+
 
 def lookUpTable(node):
     l_node = node.value.next
     run_lookUpTable(l_node)
+
 
 def run_lookUpTable(node):
     if node.type is TokenType.ID:
@@ -705,15 +717,17 @@ def run_lookUpTable(node):
     if node.next is not None:
         run_lookUpTable(node.next)
 
+
 def fest_method(input):
     test_cute = CuteScanner(input)
     test_tokens = test_cute.tokenize()
     test_basic_paser = BasicPaser(test_tokens)
     node = test_basic_paser.parse_expr()
-    #lookUpTable(node)
+    # lookUpTable(node)
     cute_inter = run_expr(node)
     print("RESULT :", end=" ")
     print(print_node(cute_inter))
+
 
 def fest_All():
     fest_method("(+ 1 2 )")
@@ -728,10 +742,12 @@ def fest_All():
     fest_method("(cond (#F 1) ( #T 2 ) )")
     fest_method("(cond ( ( null? ' ( 1 2 3 ) ) 1 ) ( ( > 100 10 ) 2 ) ( #T 3 ) )")
 
+
 def displayTable():
     for i in defineTable.keys():
-        print(i+" :", end=" ")
+        print(i + " :", end=" ")
         print(defineTable[i].value)
+
 
 def run_inter():
     print("START CUTE INTERPRETER")
@@ -750,8 +766,56 @@ def run_inter():
                 print("INVALID CUTE EXPRESSION")
                 print(e)
 
-#fest_method("(define a 3")
-#fest_method("(define b \'(1 2 3))")
-#fest_method("(define c (+ 2 4)")
-fest_method("((lambda (x) (+ x 1 ) ) 2 )")
+print("T1")
+fest_method("(define a 1)")
+print("T2")
+#fest_method("(define b `(1 2 3))")
+print("T3")
+fest_method("(define c (- 5 2))")
+print("T4")
+#fest_method("(define d `(+ 2 3))")
+print("T5")
+#fest_method("(define test b)")
+print("T6")
+fest_method("(+ a 3)")
+print("T7")
+fest_method("(define a 2)")
+fest_method("(* a 4)")
+displayTable()
+print("T8")
+fest_method("((lambda (x) (* x -2)) 3)")
+print("T9")
+fest_method("((lambda (x) (/ x 2)) a) ")
+print("T10")
+#fest_method("((lambda (x y) (* x y)) 3 5) ")
+print("T11")
+#fest_method("((lambda (x y) (* x y)) a 5) ")
+print("T12")
+fest_method("(define plus1 (lambda (x) (+ x 1)))")
+fest_method("(plus1 3)")
+print("T13")
+fest_method("(define mul1 (lambda (x) (* x a)))")
+fest_method("(mul1 a)")
+print("T14")
+fest_method("(define plus2 (lambda (x) (+ (plus1 x) 1)))")
+fest_method("(plus2 4)")
+print("T15")
+fest_method("(define plus3 (lambda (x) (+ (plus1 x) a)))")
+fest_method("(plus3 a)")
+print("T16")
+fest_method("(define mul2 (lambda (x) (* (plus1 x) -2)))")
+fest_method("(mul2 7)")
+print("T17")
+fest_method("(define lastitem(lambda (ls)(cond ((null? (cdr ls)) (car ls))(#T (lastitem (cdr ls))))))")
+print("T18")
+fest_method("(define square (lambda (x) (* x x)))")
+fest_method("(define yourfunc (lambda (x func) (func x))")
+fest_method("(yourfunc 3 square)")
+print("T19")
+fest_method("(define square (lambda (x) (* x x)))")
+fest_method("(define mul_two (lambda (x) (* 2 x)))")
+fest_method("(define new_fun(lambda (fun1 fun2 x) (fun2 (fun1 x))))")
+fest_method("(new_fun square mul_two 10)")
+print("T20")
+fest_method("(define cube (lambda (n)(define sqrt (lambda (n) (* n n)))(* (sqrt n) n)))")
 #run_inter()
