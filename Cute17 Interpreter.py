@@ -354,6 +354,8 @@ def run_list(root_node):
     op_code_node = root_node.value
     if op_code_node.type is TokenType.LIST:
         return run_list(op_code_node)
+    elif op_code_node.type is TokenType.INT:
+        return root_node
     else:
         if op_code_node.type is TokenType.ID:
             for i in defineTable.keys():
@@ -539,7 +541,7 @@ def run_func(op_code_node):
         tempNode = copy.deepcopy(node)
         l_node = tempNode.value.next
         funcNode = l_node.next
-        parNode = tempNode.next
+        parNode = run_expr(tempNode.next)
         l_node = l_node.value
         while l_node is not None:
             while True:
@@ -773,9 +775,10 @@ def run_inter():
                 print("INVALID CUTE EXPRESSION")
                 print(e)
 
-
+fest_method("(cdr (cdr '(1 2 3)))")
 print("T17")
 fest_method("(define lastitem(lambda (ls)(cond  ( (null? (cdr ls)) (car ls))   (#T (lastitem (cdr ls))) )))")
+fest_method("(lastitem '(1 2 3))")
 print("T18")
 fest_method("(define square (lambda (x) (* x x)))")
 fest_method("(define yourfunc (lambda (x func) (func x))")
