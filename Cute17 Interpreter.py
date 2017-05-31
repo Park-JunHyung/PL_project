@@ -539,13 +539,20 @@ def run_func(op_code_node):
         tempNode = copy.deepcopy(node)
         l_node = tempNode.value.next
         funcNode = l_node.next
-        while True:
-            newNode = run_search(funcNode.value, l_node.value, tempNode.next)
-            answer = run_expr(Node(TokenType.LIST, newNode))
-            if (funcNode.next is not None):
-                funcNode = funcNode.next
-            else:
-                break
+        parNode = tempNode.next
+        l_node = l_node.value
+        while l_node is not None:
+            while True:
+                newNode = run_search(funcNode.value, l_node, parNode.value)
+                if (funcNode.next is not None):
+                    funcNode = funcNode.next
+                else:
+                    break
+
+            l_node = l_node.next
+            parNode = parNode.next
+
+        answer = run_expr(Node(TokenType.LIST, newNode))
         return answer
 
     def run_search(node, varNode, targetNode):
@@ -553,7 +560,7 @@ def run_func(op_code_node):
             if node.type is TokenType.LIST:
                 run_search(node.value, varNode, targetNode)
             if (node.value == varNode.value):
-                node.value = targetNode.value
+                node.value = targetNode
             run_search(node.next, varNode, targetNode)
         return node
 
@@ -787,9 +794,9 @@ fest_method("((lambda (x) (* x -2)) 3)")
 print("T9")
 fest_method("((lambda (x) (/ x 2)) a) ")
 print("T10")
-#fest_method("((lambda (x y) (* x y)) 3 5) ")
+fest_method("((lambda (x y) (* x y)) 3 5) ")
 print("T11")
-#fest_method("((lambda (x y) (* x y)) a 5) ")
+fest_method("((lambda (x y) (* x y)) a 5) ")
 print("T12")
 fest_method("(define plus1 (lambda (x) (+ x 1)))")
 fest_method("(plus1 3)")
