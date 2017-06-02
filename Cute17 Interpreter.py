@@ -354,6 +354,8 @@ def run_list(root_node):
     op_code_node = root_node.value
     if op_code_node.type is TokenType.LIST:
         return run_list(op_code_node)
+    elif op_code_node.type is TokenType.INT:
+        return root_node
     else:
         if op_code_node.type is TokenType.ID:
             for i in defineTable.keys():
@@ -538,31 +540,40 @@ def run_func(op_code_node):
     def run_lambda(node):
         tempNode = copy.deepcopy(node)
         l_node = tempNode.value.next
-        funcNode = l_node.next
-        parNode = tempNode.next
-        l_node = l_node.value
-        while l_node is not None:
-            while True:
-                newNode = run_search(funcNode.value, l_node, parNode.value)
-                if (funcNode.next is not None):
-                    funcNode = funcNode.next
-                else:
-                    break
+        m_node = l_node.next
+        r_node = node.next
 
-            l_node = l_node.next
-            parNode = parNode.next
+        resultNode = multi_var(l_node.value,m_node,r_node)
 
-        answer = run_expr(Node(TokenType.LIST, newNode))
-        return answer
+        return run_expr(resultNode)
 
-    def run_search(node, varNode, targetNode):
-        if (node is not None):
-            if node.type is TokenType.LIST:
-                run_search(node.value, varNode, targetNode)
-            if (node.value == varNode.value):
-                node.value = targetNode
-            run_search(node.next, varNode, targetNode)
-        return node
+    def multi_var(var_node, fun_node, par_node):
+        if var_node is not None:
+            fun_node = run_change(var_node, fun_node, par_node)
+            multi_var(var_node.next, fun_node, par_node.next)
+
+        return fun_node
+
+    def run_change(var_node, fun_node, par_node):
+        par_node = run_expr(par_node)
+
+        def change(cur_node):
+            if cur_node is not None:
+                if cur_node.type is TokenType.LIST:
+                    change(cur_node.value)
+                elif cur_node.value == var_node.value:
+                    cur_node.type = par_node.type
+                    cur_node.value = par_node.value
+                change(cur_node.next)
+
+        def multi_change(cur_node):
+            if cur_node is not None:
+                change(cur_node)
+                multi_change(cur_node.next)
+
+        #multi_change(fun_node)
+        change(fun_node)
+        return fun_node
 
     def create_new_quote_list(value_node, list_flag=False):
         """
@@ -773,58 +784,70 @@ def run_inter():
                 print("INVALID CUTE EXPRESSION")
                 print(e)
 
-print("T1")
-#fest_method("(define a 1)")
-print("T2")
-#fest_method("(define b `(1 2 3))")
-print("T3")
-#fest_method("(define c (- 5 2))")
-print("T4")
-#fest_method("(define d `(+ 2 3))")
-print("T5")
-#fest_method("(define test b)")
-print("T6")
-#fest_method("(+ a 3)")
-print("T7")
-#fest_method("(define a 2)")
-#fest_method("(* a 4)")
-#displayTable()
-print("T8")
-#fest_method("((lambda (x) (* x -2)) 3)")
-print("T9")
-#fest_method("((lambda (x) (/ x 2)) a) ")
-print("T10")
-#fest_method("((lambda (x y) (* x y)) 3 5) ")
-print("T11")
-#fest_method("((lambda (x y) (* x y)) a 5) ")
-print("T12")
-#fest_method("(define plus1 (lambda (x) (+ x 1)))")
-#fest_method("(plus1 3)")
-print("T13")
-#fest_method("(define mul1 (lambda (x) (* x a)))")
-#fest_method("(mul1 a)")
-print("T14")
-#fest_method("(define plus2 (lambda (x) (+ (plus1 x) 1)))")
-#fest_method("(plus2 4)")
-print("T15")
-#fest_method("(define plus3 (lambda (x) (+ (plus1 x) a)))")
-#fest_method("(plus3 a)")
-print("T16")
-#fest_method("(define mul2 (lambda (x) (* (plus1 x) -2)))")
-#fest_method("(mul2 7)")
-print("T17")
-fest_method("(define lastitem(lambda (ls)(cond ((null? (cdr ls)) (car ls))(#T (lastitem (cdr ls))))))")
-fest_method("(lastitem (1 2 3)")
-print("T18")
-#fest_method("(define square (lambda (x) (* x x)))")
-#fest_method("(define yourfunc (lambda (x func) (func x))")
-#fest_method("(yourfunc 3 square)")
-print("T19")
-#fest_method("(define square (lambda (x) (* x x)))")
-#fest_method("(define mul_two (lambda (x) (* 2 x)))")
-#fest_method("(define new_fun(lambda (fun1 fun2 x) (fun2 (fun1 x))))")
-#fest_method("(new_fun square mul_two 10)")
+def testinter():
+    print("T1")
+    fest_method("(define a 1)")
+    print("T2")
+    fest_method("(define b '(1 2 3))")
+    print("T3")
+    fest_method("(define c (- 5 2))")
+    print("T4")
+    fest_method("(define d '(+ 2 3))")
+    print("T5")
+    fest_method("(define test b)")
+    print("T6")
+    fest_method("(+ a 3)")
+    print("T7")
+    fest_method("(define a 2)")
+    fest_method("(* a 4)")
+    displayTable()
+    print("T8")
+    fest_method("((lambda (x) (* x -2)) 3)")
+    print("T9")
+    fest_method("((lambda (x) (/ x 2)) a) ")
+    print("T10")
+    fest_method("((lambda (x y) (* x y)) 3 5) ")
+    print("T11")
+    fest_method("((lambda (x y) (* x y)) a 5) ")
+    print("T12")
+    fest_method("(define plus1 (lambda (x) (+ x 1)))")
+    fest_method("(plus1 3)")
+    print("T13")
+    fest_method("(define mul1 (lambda (x) (* x a)))")
+    fest_method("(mul1 a)")
+    print("T14")
+    fest_method("(define plus2 (lambda (x) (+ (plus1 x) 1)))")
+    fest_method("(plus2 4)")
+    print("T15")
+    fest_method("(define plus3 (lambda (x) (+ (plus1 x) a)))")
+    fest_method("(plus3 a)")
+    print("T16")
+    fest_method("(define mul2 (lambda (x) (* (plus1 x) -2)))")
+    fest_method("(mul2 7)")
+    fest_method("(cdr (cdr '(1 2 3)))")
+    print("T17")
+    fest_method("(define lastitem(lambda (ls)(cond  ( (null? (cdr ls)) (car ls))   (#T (lastitem (cdr ls))) )))")
+    fest_method("(lastitem '(1 2 3))")
+    print("T18")
+    fest_method("(define square (lambda (x) (* x x)))")
+    fest_method("(define yourfunc (lambda (x func) (func x))")
+    fest_method("(yourfunc 3 square)")
+    #print("T19")
+    #fest_method("(define square (lambda (x) (* x x)))")
+    #fest_method("(define multwo (lambda (x) (* 2 x)))")
+    #fest_method("(define newfun(lambda (fun1 fun2 x) (fun2 (fun1 x))))")
+    #fest_method("(new_fun square multwo 10)")
+    print("T20")
+    fest_method("(define cube (lambda (n)(define sqrt (lambda (n) (* n n)))(* (sqrt n) n)))")
+    fest_method("(cube 3)")
+
+#testinter()
+
 print("T20")
-#fest_method("(define cube (lambda (n)(define sqrt (lambda (n) (* n n)))(* (sqrt n) n)))")
+fest_method("(define cube (lambda (n)(define sqrt (lambda (n) (* n n)))(* (sqrt n) n)))")
+
+displayTable()
+fest_method("(cube 3)")
 
 #run_inter()
+
