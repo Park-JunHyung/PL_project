@@ -538,6 +538,8 @@ def run_func(op_code_node):
         return Node(TokenType.ID, "SUCCESS")
 
     def run_lambda(node):
+        global defineTable
+        tmpTable=copy.deepcopy(defineTable)
         tempNode = copy.deepcopy(node)
         l_node = tempNode.value.next
         m_node = l_node.next
@@ -545,7 +547,7 @@ def run_func(op_code_node):
         resultNode = multi_var(l_node.value, m_node, r_node)
 
         resultfun = exper_lambda(resultNode)
-
+        defineTable=tmpTable
         return resultfun
 
     def exper_lambda(funNode):
@@ -849,5 +851,6 @@ fest_method("(define cube (lambda (n)(define sqrt (lambda (n) (* n n)))(* (sqrt 
 displayTable()
 fest_method("(cube 3)")
 displayTable()
+fest_method("(sqrt 3)")
 #run_inter()
 
