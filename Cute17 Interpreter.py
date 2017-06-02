@@ -843,14 +843,7 @@ def testinter():
     fest_method("(define cube (lambda (n)(define sqrt (lambda (n) (* n n)))(* (sqrt n) n)))")
     fest_method("(cube 3)")
 
-#testinter()
+testinter()
 
-
-print("T20")
-fest_method("(define cube (lambda (n)(define sqrt (lambda (n) (* n n)))(* (sqrt n) n)))")
-displayTable()
-fest_method("(cube 3)")
-displayTable()
-fest_method("(sqrt 3)")
 #run_inter()
 
