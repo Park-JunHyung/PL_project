@@ -542,16 +542,23 @@ def run_func(op_code_node):
         l_node = tempNode.value.next
         m_node = l_node.next
         r_node = node.next
+        resultNode = multi_var(l_node.value, m_node, r_node)
 
-        resultNode = multi_var(l_node.value,m_node,r_node)
+        resultfun = exper_lambda(resultNode)
 
-        return run_expr(resultNode)
+        return resultfun
+
+    def exper_lambda(funNode):
+        if funNode.value.type is TokenType.DEFINE:
+            run_expr(funNode)
+            return exper_lambda(funNode.next)
+        else:
+            return run_expr(funNode)
 
     def multi_var(var_node, fun_node, par_node):
         if var_node is not None:
             fun_node = run_change(var_node, fun_node, par_node)
             multi_var(var_node.next, fun_node, par_node.next)
-
         return fun_node
 
     def run_change(var_node, fun_node, par_node):
@@ -565,13 +572,6 @@ def run_func(op_code_node):
                     cur_node.type = par_node.type
                     cur_node.value = par_node.value
                 change(cur_node.next)
-
-        def multi_change(cur_node):
-            if cur_node is not None:
-                change(cur_node)
-                multi_change(cur_node.next)
-
-        #multi_change(fun_node)
         change(fun_node)
         return fun_node
 
@@ -832,22 +832,22 @@ def testinter():
     fest_method("(define square (lambda (x) (* x x)))")
     fest_method("(define yourfunc (lambda (x func) (func x))")
     fest_method("(yourfunc 3 square)")
-    #print("T19")
-    #fest_method("(define square (lambda (x) (* x x)))")
-    #fest_method("(define multwo (lambda (x) (* 2 x)))")
-    #fest_method("(define newfun(lambda (fun1 fun2 x) (fun2 (fun1 x))))")
-    #fest_method("(new_fun square multwo 10)")
+    print("T19")
+    fest_method("(define square (lambda (x) (* x x)))")
+    fest_method("(define multwo (lambda (x) (* 2 x)))")
+    fest_method("(define newfun(lambda (fun1 fun2 x) (fun2 (fun1 x))))")
+    fest_method("(newfun square multwo 10)")
     print("T20")
     fest_method("(define cube (lambda (n)(define sqrt (lambda (n) (* n n)))(* (sqrt n) n)))")
     fest_method("(cube 3)")
 
 #testinter()
 
+
 print("T20")
 fest_method("(define cube (lambda (n)(define sqrt (lambda (n) (* n n)))(* (sqrt n) n)))")
-
 displayTable()
 fest_method("(cube 3)")
-
+displayTable()
 #run_inter()
 
