@@ -545,7 +545,6 @@ def run_func(op_code_node):
         resultNode = multi_var(l_node.value, m_node, r_node)
 
         resultfun = exper_lambda(resultNode)
-
         return resultfun
 
     def exper_lambda(funNode):
@@ -769,12 +768,15 @@ def displayTable():
 
 def run_inter():
     print("START CUTE INTERPRETER")
-    while True:
-        x = input(">> ")
-        if (x == "exit"):
-            print("EXIT SHELL")
-            break
-        elif x == "display":
+    run_input()
+
+
+def run_input():
+    x = input(">> ")
+    if x == "exit":
+        print("EXIT SHELL")
+    else:
+        if x == "display":
             displayTable()
         else:
             try:
@@ -783,6 +785,8 @@ def run_inter():
             except Exception as e:
                 print("INVALID CUTE EXPRESSION")
                 print(e)
+        run_input()
+
 
 def testinter():
     print("T1")
@@ -843,11 +847,5 @@ def testinter():
 
 #testinter()
 
-
-print("T20")
-fest_method("(define cube (lambda (n)(define sqrt (lambda (n) (* n n)))(* (sqrt n) n)))")
-displayTable()
-fest_method("(cube 3)")
-displayTable()
-#run_inter()
+run_inter()
 
