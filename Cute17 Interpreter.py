@@ -629,9 +629,9 @@ def run_expr(root_node):
 
     if root_node.type is TokenType.ID:
         for i in defineTable.keys():
-            if root_node.value is i:
+            if root_node.value == i:
                 root_node.type = defineTable[i].type
-                if defineTable[i].type is TokenType.LIST:
+                if defineTable[i].type is TokenType.LIST and defineTable[i].value.type is not TokenType.LAMBDA :
                     root_node = defineTable[i]
                     return run_list(root_node)
                 else:
@@ -789,20 +789,24 @@ def run_inter():
 def testinter():
     print("T1")
     fest_method("(define a 1)")
+    fest_method("a")
     print("T2")
     fest_method("(define b '(1 2 3))")
+    fest_method("b")
     print("T3")
     fest_method("(define c (- 5 2))")
+    fest_method("c")
     print("T4")
     fest_method("(define d '(+ 2 3))")
+    fest_method("d")
     print("T5")
     fest_method("(define test b)")
+    fest_method("test")#test 면 에러
     print("T6")
     fest_method("(+ a 3)")
     print("T7")
     fest_method("(define a 2)")
     fest_method("(* a 4)")
-    displayTable()
     print("T8")
     fest_method("((lambda (x) (* x -2)) 3)")
     print("T9")
@@ -826,7 +830,6 @@ def testinter():
     print("T16")
     fest_method("(define mul2 (lambda (x) (* (plus1 x) -2)))")
     fest_method("(mul2 7)")
-    fest_method("(cdr (cdr '(1 2 3)))")
     print("T17")
     fest_method("(define lastitem(lambda (ls)(cond  ( (null? (cdr ls)) (car ls))   (#T (lastitem (cdr ls))) )))")
     fest_method("(lastitem '(1 2 3))")
@@ -842,6 +845,7 @@ def testinter():
     print("T20")
     fest_method("(define cube (lambda (n)(define sqrt (lambda (n) (* n n)))(* (sqrt n) n)))")
     fest_method("(cube 3)")
+
 
 testinter()
 
