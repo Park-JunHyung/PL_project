@@ -565,8 +565,6 @@ def run_func(op_code_node):
         return fun_node
 
     def run_change(var_node, fun_node, par_node):
-        par_node = run_expr(par_node)
-
         def change(cur_node):
             if cur_node is not None:
                 if cur_node.type is TokenType.LIST:
@@ -575,6 +573,7 @@ def run_func(op_code_node):
                     cur_node.type = par_node.type
                     cur_node.value = par_node.value
                 change(cur_node.next)
+        par_node = run_expr(par_node)
         change(fun_node)
         return fun_node
 
@@ -749,21 +748,6 @@ def fest_method(input):
     print("RESULT :", end=" ")
     print(print_node(cute_inter))
 
-
-def fest_All():
-    fest_method("(+ 1 2 )")
-    fest_method("(- ( + 1 2 ) 4 )")
-    fest_method("(* 3 2 )")
-    fest_method("(/ 10 2 )")
-    fest_method("(< 1 5 )")
-    fest_method("(= 3 ( + 1 2 ) )")
-    fest_method("(> 1 5 )")
-    fest_method("(not #F )")
-    fest_method("(null? '( 1 2 3) )")
-    fest_method("(cond (#F 1) ( #T 2 ) )")
-    fest_method("(cond ( ( null? ' ( 1 2 3 ) ) 1 ) ( ( > 100 10 ) 2 ) ( #T 3 ) )")
-
-
 def displayTable():
     for i in defineTable.keys():
         print(i + " :", end=" ")
@@ -852,7 +836,7 @@ def testinter():
     fest_method("(define cube (lambda (n)(define sqrt (lambda (n) (* n n)))(* (sqrt n) n)))")
     fest_method("(cube 3)")
 
-#testinter()
-run_inter()
+testinter()
+#run_inter()
 
 
