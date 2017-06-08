@@ -541,10 +541,10 @@ def run_func(op_code_node):
         global defineTable
         tmpTable=copy.deepcopy(defineTable)
         tempNode = copy.deepcopy(node)
-        l_node = tempNode.value.next
-        m_node = l_node.next
-        r_node = node.next
-        resultNode = multi_var(l_node.value, m_node, r_node)
+        var_node = tempNode.value.next
+        fun_node = var_node.next
+        par_node = node.next
+        resultNode = multi_var(var_node.value, fun_node, par_node)
 
         resultfun = exper_lambda(resultNode)
 
@@ -807,7 +807,7 @@ def testinter():
     fest_method("d")
     print("T5")
     fest_method("(define test b)")
-    fest_method("test")#test 면 에러
+    fest_method("test")
     print("T6")
     fest_method("(+ a 3)")
     print("T7")
@@ -841,7 +841,7 @@ def testinter():
     fest_method("(lastitem '(1 2 3))")
     print("T18")
     fest_method("(define square (lambda (x) (* x x)))")
-    fest_method("(define yourfunc (lambda (x func) (func x))")
+    fest_method("(define yourfunc (lambda (x func) (func x)))")
     fest_method("(yourfunc 3 square)")
     print("T19")
     fest_method("(define square (lambda (x) (* x x)))")
@@ -852,8 +852,7 @@ def testinter():
     fest_method("(define cube (lambda (n)(define sqrt (lambda (n) (* n n)))(* (sqrt n) n)))")
     fest_method("(cube 3)")
 
-
-
+#testinter()
 run_inter()
 
 
